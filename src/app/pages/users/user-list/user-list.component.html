@@ -1,0 +1,16 @@
+<h2>Svi korisnici</h2>
+<button (click)="goToAdd()">Dodaj korisnika</button>
+<table border="1" style="margin-top: 10px;">
+  <tr>
+    <th>Ime</th>
+    <th>Prezime</th>
+    <th>Mail</th>
+    <th>Dozvole</th>
+  </tr>
+  <tr *ngFor="let user of users"(click)="goToEdit(user)" style="cursor: pointer;">
+    <td>{{user.firstName}}</td>
+    <td>{{user.lastName}}</td>
+    <td>{{user.email}}</td>
+    <td>{{user.permissions.join(', ')}}</td>
+  </tr>
+</table>

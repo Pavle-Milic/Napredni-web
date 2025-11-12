@@ -1,0 +1,5 @@
+<h2>Prijava</h2>
+<input [(ngModel)]="email" placeholder="Email" />
+<input [(ngModel)]="password" placeholder="Lozinka" type="password" />
+<button (click)="login()">Prijavi se</button>
+<p style="color:red">{{error}}</p>
