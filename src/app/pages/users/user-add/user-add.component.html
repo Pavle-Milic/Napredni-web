@@ -1,1 +1,21 @@
-<p>user-add works!</p>
+<h2>Dodavanje korisnika</h2>
+<p style="color:red">{{error}}</p>
+
+<label>Ime:</label>
+<input [(ngModel)]="firstName"><br>
+
+<label>Prezime:</label>
+<input [(ngModel)]="lastName"><br>
+
+<label>Email:</label>
+<input [(ngModel)]="email"><br>
+
+<h3>Dozvole:</h3>
+<div>
+  <label> <input type="checkbox" (change)="togglePermissions('add_user')">add_user </label><br>
+  <label> <input type="checkbox" (change)="togglePermissions('read_user')">read_user </label><br>
+  <label> <input type="checkbox" (change)="togglePermissions('edit_user')">edit_user </label><br>
+  <label> <input type="checkbox" (change)="togglePermissions('delete_user')">delete_user </label><br>
+</div>
+
+<button (click)="addUser()">Sacuvaj</button>

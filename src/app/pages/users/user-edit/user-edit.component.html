@@ -1,1 +1,19 @@
-<p>user-edit works!</p>
+<h2>Uredjivanje korisnika</h2>
+<p style="color:red">{{error}}</p>
+<label>Ime:</label>
+<input [(ngModel)]="user.firstName"><br>
+
+<label>Prezime:</label>
+<input [(ngModel)]="user.lastName"><br>
+
+<label>Email:</label>
+<input [(ngModel)]="user.email"><br>
+
+<h3>Dozvole:</h3>
+<div>
+  <label><input type="checkbox"[checked]="user.permissions.includes('add_user')"(change)="togglePermission('add_user')">add_user</label><br>
+  <label><input type="checkbox"[checked]="user.permissions.includes('read_user')"(change)="togglePermission('read_user')">read_user</label><br>
+  <label><input type="checkbox"[checked]="user.permissions.includes('edit_user')"(change)="togglePermission('edit_user')">edit_user</label><br>
+  <label><input type="checkbox"[checked]="user.permissions.includes('delete_user')"(change)="togglePermission('delete_user')">delete_user</label><br>
+</div>
+<button (click)="saveChanges()">Sacuvaj</button>

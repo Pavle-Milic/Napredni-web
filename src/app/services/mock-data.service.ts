@@ -6,8 +6,9 @@ import { User } from '../models/user.model';
 })
 export class MockDataService {
   users: User[] = [
-    { id: 1, firstName: 'Admin', lastName: 'User', email: 'admin@raf.rs', permissions: ['create_user', 'read_user', 'update_user', 'delete_user'] },
-    { id: 2, firstName: 'Pera', lastName: 'Peric', email: 'pera@raf.rs', permissions: ['read_user'] }
+    { id: 1, firstName: 'Admin', lastName: 'User', email: 'admin@raf.rs', permissions: ['add_user', 'read_user', 'edit_user', 'delete_user'] },
+    { id: 2, firstName: 'Pera', lastName: 'Peric', email: 'pera@raf.rs', permissions: ['read_user'] },
+    { id: 3, firstName: 'Mika', lastName: 'Antic', email: 'mika@raf.rs', permissions: []}
   ];
 
   getUsers() {
@@ -22,10 +23,14 @@ export class MockDataService {
     return this.users.find(u => u.id === id);
   }
 
-  updateUser(user: User) {
+  editUser(user: User) {
     const index = this.users.findIndex(u => u.id === user.id);
     if (index !== -1) {
       this.users[index] = user;
     }
+  }
+
+  deleteUser(id:number){
+    this.users=this.users.filter(u=>u.id !==id);
   }
 }

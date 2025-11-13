@@ -21,4 +21,10 @@ export class UserListComponent {
   goToAdd(){
     this.router.navigate(['/users/add'])
   }
+  deleteUser(id:number){
+    if(confirm("Potvrdi brisanje")){
+      this.mockService.deleteUser(id);
+      this.users=this.mockService.getUsers();
+    }
+  }
 }

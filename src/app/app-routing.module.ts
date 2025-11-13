@@ -10,7 +10,8 @@ const routes: Routes = [{
   {path:'login',component: LoginComponent},
   {path:'users',component: UserListComponent},
   {path:'users/add',component:UserAddComponent},
-  {path:'user/:id/edit',component:UserEditComponent},
+  {path:'users/:id/edit',component:UserEditComponent},
+  //fali path za delete
 ];
 
 @NgModule({
