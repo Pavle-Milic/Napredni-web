@@ -6,10 +6,19 @@ import { User } from '../models/user.model';
 })
 export class MockDataService {
   users: User[] = [
-    { id: 1, firstName: 'Admin', lastName: 'User', email: 'admin@raf.rs', permissions: ['add_user', 'read_user', 'edit_user', 'delete_user'] },
+    { id: 1, firstName: 'Admin', lastName: 'User', email: 'admin@raf.rs',password:'admin', permissions: ['add_user', 'read_user', 'edit_user', 'delete_user'] },
     { id: 2, firstName: 'Pera', lastName: 'Peric', email: 'pera@raf.rs', permissions: ['read_user'] },
     { id: 3, firstName: 'Mika', lastName: 'Antic', email: 'mika@raf.rs', permissions: []}
   ];
+
+  loggedUser: User | null=null;
+
+  setLoggedUser(user:User){
+    this.loggedUser=user;
+  }
+  getLoggedUser(): User|null{
+    return this.loggedUser;
+  }
 
   getUsers() {
     return this.users;

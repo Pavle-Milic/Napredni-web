@@ -1,5 +1,6 @@
 <h2>Svi korisnici</h2>
-<button (click)="goToAdd()">Dodaj korisnika</button>
+<button *ngIf="loggedUser?.permissions?.includes('add_user')"
+  (click)="goToAdd()">Dodaj korisnika</button>
 <table border="1" style="margin-top: 10px;">
   <tr>
     <th>Ime</th>
@@ -7,11 +8,33 @@
     <th>Mail</th>
     <th>Dozvole</th>
   </tr>
-  <tr *ngFor="let user of users"(click)="goToEdit(user)" style="cursor: pointer;">
+  <tr *ngFor="let user of users">
+
     <td>{{user.firstName}}</td>
+
     <td>{{user.lastName}}</td>
-    <td>{{user.email}}</td>
+
+    <td>
+      <span *ngIf="loggedUser?.permissions?.includes('edit_user'); else noEdit"
+            (click)="goToEdit(user)"
+            style="cursor:pointer; text-decoration:underline;">
+        {{ user.email }}
+      </span>
+      <ng-template #noEdit>
+      <span>
+        {{ user.email }}
+      </span>
+        </ng-template>
+    </td>
+
+
     <td>{{user.permissions.join(', ')}}</td>
-    <td><button (click)="deleteUser(user.id)">Delete</button> </td>
+
+    <td><button *ngIf="loggedUser?.permissions?.includes('delete_user')"
+                (click)="deleteUser(user.id)">
+      Delete
+    </button>
+    </td>
+
   </tr>
 </table>

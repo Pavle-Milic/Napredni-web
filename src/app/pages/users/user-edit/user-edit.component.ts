@@ -21,7 +21,7 @@ export class UserEditComponent {
   }
   ngOnInit(){
     const id= Number(this.route.snapshot.paramMap.get('id'));
-    const foundUser = this.mockService.getUsers().find(u=>u.id===id);
+    const foundUser = this.mockService.getUserById(id);
     if(foundUser){
       this.user={...foundUser};
     }else{
@@ -36,12 +36,7 @@ export class UserEditComponent {
     }
   }
   saveChanges(){
-    const index=this.mockService.users.findIndex(u=>u.id === this.user.id);
-    if(index!==-1){
-      this.mockService.users[index]=this.user;
-      this.router.navigate(['/users']);
-    }else{
-      this.error='Greska pri azuriranju';
-    }
+    this.mockService.editUser(this.user);
+    this.router.navigate(['/users']);
   }
 }

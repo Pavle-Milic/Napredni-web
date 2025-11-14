@@ -11,7 +11,6 @@ const routes: Routes = [{
   {path:'users',component: UserListComponent},
   {path:'users/add',component:UserAddComponent},
   {path:'users/:id/edit',component:UserEditComponent},
-  //fali path za delete
 ];
 
 @NgModule({

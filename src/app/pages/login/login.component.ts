@@ -16,13 +16,19 @@ export class LoginComponent {
               private mockService: MockDataService) {
   }
   login(){
-    const user = this.mockService.getUsers().find(u =>u.email === this.email);
+    const user =
+      this.mockService.getUsers().find(u =>u.email === this.email && (u.password ?? "")===(this.password??""));
     if(user){
       localStorage.setItem('token', 'mock-token');
       localStorage.setItem('loggedUser', JSON.stringify(user));
-      this.router.navigate(['/users']);
+      this.mockService.setLoggedUser(user);
+      if(user.permissions?.includes('read_user'))
+        this.router.navigate(['/users']);
+      else {
+        this.error="Nemate dozvolu da vidite listu korisnika.";
+      }
     }else{
-      this.error="Korisnik sa unetim mailom ne postoji.";
+      this.error="Korisnik sa unetim mailom ili sifrom ne postoji.";
     }
   }
 }

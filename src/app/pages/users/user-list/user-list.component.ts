@@ -10,10 +10,13 @@ import {Router} from "@angular/router";
 })
 export class UserListComponent {
   users: User[]= [];
+  loggedUser:User|null=null;
+
   constructor(private mockService: MockDataService, private router: Router) {
   }
   ngOnInit(){
     this.users=this.mockService.getUsers();
+    this.loggedUser=this.mockService.getLoggedUser();
   }
   goToEdit(user:User){
     this.router.navigate(['/users',user.id,'edit']);
