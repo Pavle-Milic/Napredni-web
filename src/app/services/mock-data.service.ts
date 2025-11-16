@@ -42,4 +42,11 @@ export class MockDataService {
   deleteUser(id:number){
     this.users=this.users.filter(u=>u.id !==id);
   }
+
+  logout() {
+    this.loggedUser = null;
+    localStorage.removeItem('loggedUser');
+    localStorage.removeItem('token');
+  }
+
 }
