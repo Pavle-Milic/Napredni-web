@@ -1,0 +1,48 @@
+<h2>Pretraga masina</h2>
+
+<form (ngSubmit)="search()" style="margin-bottom: 20px;">
+
+  <input type="text"
+  placeholder="Ime masine"
+  [(ngModel)]="filters.name"
+  name="name"/>
+
+  <select [(ngModel)]="filters.status" name="status">
+    <option value="">All</option>
+    <option value="ON">Upaljena</option>
+    <option value="OFF">Ugasena</option>
+  </select>
+
+  <input type="date"
+  [(ngModel)]="filters.startDate" name="startDate"/>
+
+  <input type="date"
+  [(ngModel)]="filters.endDate" name="endDate"/>
+
+  <button type="submit">Pretrazi</button>
+
+</form>
+
+<table border="1" cellpadding="5">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Ime</th>
+    <th>Stanje</th>
+    <th>Napravio je</th>
+    <th>Aktivna</th>
+    <th>Napravljena datuma</th>
+  </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let m of filteredMachines">
+      <td>{{m.id}}</td>
+      <td>{{m.name}}</td>
+      <td>{{m.status}}</td>
+      <td>{{m.createdBy}}</td>
+      <td>{{m.active ? 'Da' : 'Ne'}}</td>
+      <td>{{m.createdAt}}</td>
+    </tr>
+  </tbody>
+</table>

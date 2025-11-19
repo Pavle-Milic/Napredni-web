@@ -3,6 +3,8 @@
   <a routerLink="/users">Users</a> |
   <a *ngIf="mockService.getLoggedUser()?.permissions?.includes('add_user')"
      routerLink="/users/add">Add User</a> |
+  <a *ngIf="mockService.getLoggedUser()?.permissions?.includes('search_machine')"
+     routerLink="/machines">Machines</a> |
 
   <button (click)="logout()">Logout</button>
 </nav>

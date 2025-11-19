@@ -8,6 +8,7 @@ import { UserListComponent } from './pages/users/user-list/user-list.component';
 import { UserAddComponent } from './pages/users/user-add/user-add.component';
 import { UserEditComponent } from './pages/users/user-edit/user-edit.component';
 import {FormsModule} from "@angular/forms";
+import { MachineListComponent } from './pages/machines/machine-list/machine-list.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import {FormsModule} from "@angular/forms";
     LoginComponent,
     UserListComponent,
     UserAddComponent,
-    UserEditComponent
+    UserEditComponent,
+    MachineListComponent
   ],
   imports: [
     BrowserModule,

@@ -5,6 +5,7 @@ import {UserListComponent} from "./pages/users/user-list/user-list.component";
 import {UserAddComponent} from "./pages/users/user-add/user-add.component";
 import {UserEditComponent} from "./pages/users/user-edit/user-edit.component";
 import {PermissionGuard} from "./guards/permission.guard";
+import {MachineListComponent} from "./pages/machines/machine-list/machine-list.component";
 
 const routes: Routes = [{
   path:'',redirectTo:'login',pathMatch:'full'},
@@ -19,6 +20,13 @@ const routes: Routes = [{
 
   {path:'users/:id/edit',component:UserEditComponent, canActivate: [PermissionGuard],
     data: { permission: 'edit_user' }},
+
+  //rute za masine
+
+  {path:'machines', component:MachineListComponent, canActivate:[PermissionGuard],
+    data:{permission: 'search_machine'}},
+
+  //{path:'machines',component:} fale za error i create
 ];
 
 @NgModule({
