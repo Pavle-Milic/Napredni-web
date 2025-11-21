@@ -1,6 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {Machine} from "../../../models/machine.model";
 import {MockDataService} from "../../../services/mock-data.service";
+import {Router} from "@angular/router";
+import {User} from "../../../models/user.model";
 
 @Component({
   selector: 'app-machine-list',
@@ -10,6 +12,7 @@ import {MockDataService} from "../../../services/mock-data.service";
 export class MachineListComponent implements OnInit{
   machines: Machine[]=[];
   filteredMachines:Machine[]=[];
+  user:User|null=null;
 
   filters={
     name:'',
@@ -17,16 +20,16 @@ export class MachineListComponent implements OnInit{
     startDate:'',
     endDate:''
   };
-  constructor(private mockService: MockDataService) {
+  constructor(private mockService: MockDataService, private router: Router) {
   }
   ngOnInit() {
-    const user=this.mockService.getLoggedUser();
+    this.user=this.mockService.getLoggedUser();
     const allMachines=this.mockService.getMachines();
 
-    if(user?.email.includes('admin@raf.rs')){
+    if(this.mockService.isAdmin()){
       this.machines=allMachines.filter(m=>m.active);
     }else{
-      this.machines=allMachines.filter(m=> m.active && m.createdBy===user?.id);
+      this.machines=allMachines.filter(m=> m.active && m.createdBy===this.user?.id);
     }
     this.filteredMachines=[...this.machines];
   }
@@ -46,5 +49,16 @@ export class MachineListComponent implements OnInit{
         new Date(m.createdAt) <= new Date(this.filters.endDate) : true;
       return nameOk && statusOk && startOk && endOk;
     });
+  }
+
+  goToCreate(){
+    this.router.navigate(['/machines/create']);
+  }
+  destroyMachine(id:number){
+    if(confirm("Potvrdi brisanje")){
+      this.mockService.destroyMachine(id);
+      this.machines = this.machines.filter(m => m.id !== id);
+      this.filteredMachines = this.filteredMachines.filter(m => m.id !== id);
+    }
   }
 }

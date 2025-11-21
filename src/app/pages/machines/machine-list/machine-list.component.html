@@ -1,5 +1,8 @@
 <h2>Pretraga masina</h2>
 
+<button *ngIf="user?.permissions?.includes('create_machine')"
+        (click)="goToCreate()">Dodaj masinu</button>
+
 <form (ngSubmit)="search()" style="margin-bottom: 20px;">
 
   <input type="text"
@@ -43,6 +46,11 @@
       <td>{{m.createdBy}}</td>
       <td>{{m.active ? 'Da' : 'Ne'}}</td>
       <td>{{m.createdAt}}</td>
+      <td><button *ngIf="user?.permissions?.includes('destroy_machine')"
+                  (click)="destroyMachine(m.id)">
+        Delete
+      </button>
+      </td>
     </tr>
   </tbody>
 </table>

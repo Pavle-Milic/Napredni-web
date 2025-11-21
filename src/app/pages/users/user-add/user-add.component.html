@@ -16,6 +16,13 @@
   <label> <input type="checkbox" (change)="togglePermissions('read_user')">read_user </label><br>
   <label> <input type="checkbox" (change)="togglePermissions('edit_user')">edit_user </label><br>
   <label> <input type="checkbox" (change)="togglePermissions('delete_user')">delete_user </label><br>
+  <label> <input type="checkbox" (change)="togglePermissions('search_machine')">search_machine </label><br>
+  <label> <input type="checkbox" (change)="togglePermissions('create_machine')">create_machine </label><br>
+  <label> <input type="checkbox" (change)="togglePermissions('destroy_machine')">destroy_machine </label><br>
+  <label> <input type="checkbox" (change)="togglePermissions('start_machine')">start_machine </label><br>
+  <label> <input type="checkbox" (change)="togglePermissions('stop_machine')">stop_machine </label><br>
+  <label> <input type="checkbox" (change)="togglePermissions('restart_machine')">restart_machine </label><br>
+  <label> <input type="checkbox" (change)="togglePermissions('read_errors')">read_errors </label><br>
 </div>
 
 <button (click)="addUser()">Sacuvaj</button>

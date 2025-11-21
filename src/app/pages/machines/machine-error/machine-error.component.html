@@ -1,0 +1,31 @@
+<h2>Istorija gresaka masina</h2>
+
+<table border="1" cellpadding="8" style="border-collapse: collapse; margin-top: 20px;">
+
+  <thead>
+  <tr>
+    <th>Datum greske</th>
+    <th>Machine ID</th>
+    <th>Operacija</th>
+    <th>Poruka</th>
+  </tr>
+  </thead>
+
+  <tbody>
+
+  <tr *ngFor="let err of errors">
+    <td>{{ err.date | date:'yyyy-MM-dd HH:mm' }}</td>
+    <td>{{ err.machineId }}</td>
+    <td>{{ err.operation }}</td>
+    <td>{{ err.message }}</td>
+  </tr>
+
+  <tr *ngIf="errors.length === 0">
+    <td colspan="4" style="text-align:center; padding: 10px;">
+      Nema zapisanih greski.
+    </td>
+  </tr>
+
+  </tbody>
+
+</table>

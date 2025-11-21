@@ -1,0 +1,16 @@
+<h2>Napravi novu masinu</h2>
+
+<div style="margin-top:20px;">
+
+  <label>Ime masine:</label><br>
+  <input type="text"
+         [(ngModel)]="name"
+         placeholder="Unesite ime masine">
+
+  <br><br>
+
+  <button (click)="createMachine()">Napravi</button>
+
+  <p style="color:red;" *ngIf="error">{{ error }}</p>
+
+</div>

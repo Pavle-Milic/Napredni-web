@@ -9,6 +9,8 @@ import { UserAddComponent } from './pages/users/user-add/user-add.component';
 import { UserEditComponent } from './pages/users/user-edit/user-edit.component';
 import {FormsModule} from "@angular/forms";
 import { MachineListComponent } from './pages/machines/machine-list/machine-list.component';
+import { MachineErrorComponent } from './pages/machines/machine-error/machine-error.component';
+import { MachineCreateComponent } from './pages/machines/machine-create/machine-create.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,9 @@ import { MachineListComponent } from './pages/machines/machine-list/machine-list
     UserListComponent,
     UserAddComponent,
     UserEditComponent,
-    MachineListComponent
+    MachineListComponent,
+    MachineErrorComponent,
+    MachineCreateComponent
   ],
   imports: [
     BrowserModule,

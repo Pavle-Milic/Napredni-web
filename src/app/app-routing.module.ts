@@ -6,6 +6,8 @@ import {UserAddComponent} from "./pages/users/user-add/user-add.component";
 import {UserEditComponent} from "./pages/users/user-edit/user-edit.component";
 import {PermissionGuard} from "./guards/permission.guard";
 import {MachineListComponent} from "./pages/machines/machine-list/machine-list.component";
+import {MachineErrorComponent} from "./pages/machines/machine-error/machine-error.component";
+import {MachineCreateComponent} from "./pages/machines/machine-create/machine-create.component";
 
 const routes: Routes = [{
   path:'',redirectTo:'login',pathMatch:'full'},
@@ -26,7 +28,13 @@ const routes: Routes = [{
   {path:'machines', component:MachineListComponent, canActivate:[PermissionGuard],
     data:{permission: 'search_machine'}},
 
-  //{path:'machines',component:} fale za error i create
+  {
+    path: 'machines/errors', component: MachineErrorComponent, canActivate: [PermissionGuard],
+    data: { permission: 'read_errors' }//nije neophodan, samo mi je bilo lakse
+  },
+
+  {path:'machines/create', component:MachineCreateComponent, canActivate:[PermissionGuard],
+    data:{permission: 'create_machine'}}
 ];
 
 @NgModule({

@@ -1,10 +1,12 @@
 <nav *ngIf="isLoggedIn">
 
-  <a routerLink="/users">Users</a> |
+  <a routerLink="/users">Korisnici</a> |
   <a *ngIf="mockService.getLoggedUser()?.permissions?.includes('add_user')"
-     routerLink="/users/add">Add User</a> |
+     routerLink="/users/add">Dodaj korisnika</a> |
   <a *ngIf="mockService.getLoggedUser()?.permissions?.includes('search_machine')"
-     routerLink="/machines">Machines</a> |
+     routerLink="/machines">Masine</a> |
+  <a *ngIf="mockService.getLoggedUser()?.permissions?.includes('read_errors')"
+     routerLink="/machines/errors">Sve greske</a> |
 
   <button (click)="logout()">Logout</button>
 </nav>

@@ -24,9 +24,7 @@ export class LoginComponent {
       this.mockService.setLoggedUser(user);
       if(user.permissions?.includes('read_user'))
         this.router.navigate(['/users']);
-      else {
-        this.error="Nemate dozvolu da vidite listu korisnika.";
-      }
+      if(user.permissions.length===0) alert("Nemate ni jednu dozvolu.");
     }else{
       this.error="Korisnik sa unetim mailom ili sifrom ne postoji.";
     }
