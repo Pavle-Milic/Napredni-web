@@ -3,21 +3,35 @@ import { User } from '../models/user.model';
 import {Machine} from "../models/machine.model";
 import {MachineError} from "../models/machine-error.model";
 
+import { inject } from '@angular/core';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+
+
 @Injectable({
   providedIn: 'root'
 })
 export class MockDataService {
-  users: User[] = [
-    { id: 1, firstName: 'Admin', lastName: 'User', email: 'admin@raf.rs',password:'admin',
-      permissions: ['add_user', 'read_user', 'edit_user', 'delete_user', //dozvole sto se tice korisnika
-        'search_machine','create_machine','destroy_machine','start_machine','stop_machine','restart_machine','read_errors'] }, //dozvole sto se tice masina
-    { id: 2, firstName: 'Pera', lastName: 'Peric', email: 'pera@raf.rs',
-      permissions: ['read_user','create_machine','search_machine','read_errors'] },
-    { id: 3, firstName: 'Mika', lastName: 'Antic', email: 'mika@raf.rs',
-      permissions: []}
-  ];
+  private http = inject(HttpClient); // Koristi inject() ili konstruktor
+    private apiUrl = 'http://localhost:3000/api';
 
-  loggedUser: User | null=null;
+    // Umesto niza, sada vraća Observable
+    getMachines(): Observable<Machine[]> {
+      return this.http.get<Machine[]>(`${this.apiUrl}/machines`);
+    }
+
+    // Login sada šalje zahtev backendu
+    login(credentials: any) {
+      return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
+        tap(res => {
+          localStorage.setItem('token', res.token);
+          this.setLoggedUser(res.user);
+        })
+      );
+    }
+
+  /*loggedUser: User | null=null;
 
   setLoggedUser(user:User){
     this.loggedUser=user;
@@ -30,17 +44,17 @@ export class MockDataService {
     return this.loggedUser?.email === 'admin@raf.rs';
   }
 
-  getUsers() {
+  /*getUsers() {
     return this.users;
   }
 
   addUser(user: User) {
     this.users.push(user);
-  }
+  }*/
 
-  getUserById(id: number) {
+  /*getUserById(id: number) {
     return this.users.find(u => u.id === id);
-  }
+  }*/
 
   editUser(user: User) {
     const index = this.users.findIndex(u => u.id === user.id);
@@ -60,28 +74,10 @@ export class MockDataService {
   }
 
 
-  //mock masine
-  private machines: Machine[]=[
-    {
-      id:1,
-      name:'Engine A',
-      status:'OFF',
-      createdBy: 1,
-      active:true,
-      createdAt:"2025-01-01"
-    },
-    {
-      id:2,
-      name:'Engine B',
-      status:'OFF',
-      createdBy: 2,
-      active:true,
-      createdAt:"2025-02-01"
-    }
-  ];
-  getMachines():Machine[]{
+
+  /*getMachines():Machine[]{
     return this.machines;
-  }
+  }*/
   addMachines(machine:Machine){
     this.machines.push(machine);
   }
@@ -96,42 +92,17 @@ export class MockDataService {
 
 
   //MOCK MACHINE ERRORS
-  private errors: MachineError[] = [
-    {
-      date: "2025-11-20T14:22:00",
-      machineId: 1,
-      operation: "start",
-      message: "Masin je vec ON. Ne moze se upaliti opet."
-    },
-    {
-      date: "2025-11-21T09:10:00",
-      machineId: 1,
-      operation: "stop",
-      message: "Masina je vec OFF. Ne moze se ugasiti."
-    },
-    {
-      date: "2025-11-21T16:45:00",
-      machineId: 2,
-      operation: "restart",
-      message: "Masina je OFF. Ne moze se restartovati dok je OFF."
-    },
-    {
-      date: "2025-11-22T11:20:00",
-      machineId: 2,
-      operation: "start",
-      message: "Korisnik nema dozvolu da upali ovu masinu."
-    }
-  ];
 
 
 
-  getErrorsForUser(userId:number,isAdmin:boolean){
+
+  /*getErrorsForUser(userId:number,isAdmin:boolean){
     if(isAdmin) return this.errors;
     return this.errors.filter(err=>{
       const machine = this.machines.find(m=>m.id === err.machineId);
       return machine?.createdBy === userId;
     });
-  }
+  }*/
 
   /* addError(error: MachineError){
     this.errors.push(error);

@@ -11,7 +11,8 @@ import {FormsModule} from "@angular/forms";
 import { MachineListComponent } from './pages/machines/machine-list/machine-list.component';
 import { MachineErrorComponent } from './pages/machines/machine-error/machine-error.component';
 import { MachineCreateComponent } from './pages/machines/machine-create/machine-create.component';
-
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,9 +27,15 @@ import { MachineCreateComponent } from './pages/machines/machine-create/machine-
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [{
+                  provide: HTTP_INTERCEPTORS,
+                  useClass: AuthInterceptor,
+                  multi: true
+                },
+              {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

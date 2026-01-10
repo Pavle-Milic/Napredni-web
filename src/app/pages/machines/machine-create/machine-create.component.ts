@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {MockDataService} from "../../../services/mock-data.service";
 import {Router} from "@angular/router";
 import {Machine} from "../../../models/machine.model";
+import {MachinesApiService} from "../../../services/machines-api.service"
 
 @Component({
   selector: 'app-machine-create',
@@ -12,7 +13,7 @@ export class MachineCreateComponent {
   name='';
   error='';
 
-  constructor(private mockService: MockDataService,
+  constructor(private machinesApi: MachinesApiService,
               private router: Router) {
   }
 
@@ -22,7 +23,7 @@ export class MachineCreateComponent {
       return;
     }
 
-    const user= this.mockService.getLoggedUser();
+    const user= this.machinesApi.getLoggedUser();
 
     if(!user){
       return; //inace puca pri pravljenju masine
@@ -37,7 +38,7 @@ export class MachineCreateComponent {
       createdAt: new Date().toISOString()
     };
 
-    this.mockService.addMachines(newMachine);
+    this.machinesApi.addMachines(newMachine);
 
     this.router.navigate(['/machines']);
   }

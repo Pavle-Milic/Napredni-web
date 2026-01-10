@@ -3,6 +3,7 @@ import {Machine} from "../../../models/machine.model";
 import {MockDataService} from "../../../services/mock-data.service";
 import {Router} from "@angular/router";
 import {User} from "../../../models/user.model";
+import {MachinesApiService} from "../../../services/machines-api.service"
 
 @Component({
   selector: 'app-machine-list',
@@ -20,13 +21,13 @@ export class MachineListComponent implements OnInit{
     startDate:'',
     endDate:''
   };
-  constructor(private mockService: MockDataService, private router: Router) {
+  constructor(private machinesApi: MachinesApiService, private router: Router) {
   }
   ngOnInit() {
-    this.user=this.mockService.getLoggedUser();
-    const allMachines=this.mockService.getMachines();
+    this.user=this.machinesApi.getLoggedUser();
+    const allMachines=this.machinesApi.getMachines();
 
-    if(this.mockService.isAdmin()){
+    if(this.machinesApi.isAdmin()){
       this.machines=allMachines.filter(m=>m.active);
     }else{
       this.machines=allMachines.filter(m=> m.active && m.createdBy===this.user?.id);
@@ -56,7 +57,7 @@ export class MachineListComponent implements OnInit{
   }
   destroyMachine(id:number){
     if(confirm("Potvrdi brisanje")){
-      this.mockService.destroyMachine(id);
+      this.machinesApi.destroyMachine(id);
       this.machines = this.machines.filter(m => m.id !== id);
       this.filteredMachines = this.filteredMachines.filter(m => m.id !== id);
     }

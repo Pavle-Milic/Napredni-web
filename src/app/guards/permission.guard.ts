@@ -1,34 +1,25 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, Router } from '@angular/router';
-import { MockDataService } from '../services/mock-data.service';
+import { AuthService } from '../services/auth.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class PermissionGuard implements CanActivate {
 
-  constructor(
-    private mockService: MockDataService,
-    private router: Router
-  ) {}
+  constructor(private auth: AuthService, private router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
-    const requiredPermission = route.data['permission'];
+    const required = route.data['permission'] as string | undefined;
 
-    const loggedUser = this.mockService.getLoggedUser();
-
-
-    if (!loggedUser) {
-      alert("Morate prvo da se ulogujete.");
+    if (!this.auth.isLoggedIn()) {
       this.router.navigate(['/login']);
       return false;
     }
 
-    // ako nema potrebnu permisiju
-    if (!loggedUser.permissions?.includes(requiredPermission)) {
-      alert("Nemate dozvolu za pristup ovoj stranici.");
-      return false;
+    if (!required) return true;
 
+    if (!this.auth.hasPermission(required)) {
+      alert('You do not have permission.');
+      return false;
     }
 
     return true;
