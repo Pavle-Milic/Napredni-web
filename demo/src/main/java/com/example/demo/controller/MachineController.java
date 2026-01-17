@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Machine;
 import com.example.demo.entity.MachineStatus;
+import com.example.demo.entity.ScheduledOperation;
 import com.example.demo.entity.User;
 import com.example.demo.repository.MachineRepository;
 import com.example.demo.security.MyUserDetails;
@@ -81,6 +82,37 @@ public class MachineController {
       // Hvatamo gresku ako masina nije STOPPED
       return ResponseEntity.badRequest().body(e.getMessage());
     }
+  }
+
+  // START - Odmah
+  @PostMapping("/start/{id}")
+  public ResponseEntity<?> start(@PathVariable Long id) {
+    // ... provera permisije ...
+    try {
+      machineService.startMachine(id); // Ovo sad samo setuje busy i pokrece async
+      return ResponseEntity.ok().build();
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body(e.getMessage());
+    }
+  }
+
+  // SCHEDULE - Zakazivanje
+  @PostMapping("/schedule")
+  public ResponseEntity<?> schedule(@RequestBody ScheduledOperation request) {
+    // Request body treba da ima: machineId, operation ("START"), scheduledTime
+    User user = getCurrentUser();
+    if(!user.getPermissions().contains("can_schedule")) { // Dodaj ovu permisiju ako zelis
+      // ili koristi postojece start/stop permisije
+    }
+
+    machineService.scheduleOperation(
+      request.getMachineId(),
+      request.getOperation(),
+      request.getScheduledTime(),
+      user.getId()
+    );
+
+    return ResponseEntity.ok().build();
   }
 
   // --- POMOCNE METODE ---

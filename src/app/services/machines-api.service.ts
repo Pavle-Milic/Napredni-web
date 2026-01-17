@@ -7,6 +7,7 @@ import { MachineError } from '../models/machine-error.model'; // Pretpostavka da
 @Injectable({ providedIn: 'root' })
 export class MachinesApiService {
   private baseUrl = 'http://localhost:8080/api/machines';
+  private errorsUrl = 'http://localhost:8080/api/errors';
 
   constructor(private http: HttpClient) {}
 
@@ -32,31 +33,43 @@ export class MachinesApiService {
 
   // --- NOVE METODE ZA AKCIJE ---
 
-  // start(id) ili start(id, scheduledDate)
   startMachine(id: number, scheduledTime?: string): Observable<any> {
     if(scheduledTime) {
-       // Ako ima datum, gadjas endpoint za zakazivanje
-       return this.http.post(`${this.baseUrl}/schedule`, { machineId: id, operation: 'START', date: scheduledTime });
+      // BITNO: Backend ocekuje 'scheduledTime', ne 'date'!
+      return this.http.post(`${this.baseUrl}/schedule`, {
+        machineId: id,
+        operation: 'START',
+        scheduledTime: scheduledTime
+      });
     }
     return this.http.post(`${this.baseUrl}/start/${id}`, {});
   }
 
   stopMachine(id: number, scheduledTime?: string): Observable<any> {
     if(scheduledTime) {
-       return this.http.post(`${this.baseUrl}/schedule`, { machineId: id, operation: 'STOP', date: scheduledTime });
+      return this.http.post(`${this.baseUrl}/schedule`, {
+        machineId: id,
+        operation: 'STOP',
+        scheduledTime: scheduledTime
+      });
     }
     return this.http.post(`${this.baseUrl}/stop/${id}`, {});
   }
 
   restartMachine(id: number, scheduledTime?: string): Observable<any> {
     if(scheduledTime) {
-       return this.http.post(`${this.baseUrl}/schedule`, { machineId: id, operation: 'RESTART', date: scheduledTime });
+      return this.http.post(`${this.baseUrl}/schedule`, {
+        machineId: id,
+        operation: 'RESTART',
+        scheduledTime: scheduledTime
+      });
     }
     return this.http.post(`${this.baseUrl}/restart/${id}`, {});
   }
 
-  // Metoda za dovlačenje grešaka
+  // --- POPRAVLJENA METODA ZA GRESKE ---
   getErrors(): Observable<MachineError[]> {
-      return this.http.get<MachineError[]>(`${this.baseUrl}/errors`);
+    // Gadja http://localhost:8080/api/errors
+    return this.http.get<MachineError[]>(this.errorsUrl);
   }
 }

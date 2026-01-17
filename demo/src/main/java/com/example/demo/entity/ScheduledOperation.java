@@ -14,7 +14,7 @@ public class ScheduledOperation {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-
+  private Long userId;
   private Long machineId;
   private String operation; // "START", "STOP", "RESTART"
   private LocalDateTime scheduledTime;

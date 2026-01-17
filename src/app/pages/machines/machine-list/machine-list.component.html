@@ -72,6 +72,13 @@
         </button>
 
       </td>
+      <td>
+        <button [routerLink]="['/machines', m.id, 'schedule']"
+                class="btn btn-info btn-sm"
+                style="margin-left: 5px;">
+          🕒 Zakaži
+        </button>
+      </td>
     </tr>
 
     <tr *ngIf="filteredMachines.length === 0">

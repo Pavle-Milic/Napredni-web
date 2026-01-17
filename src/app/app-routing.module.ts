@@ -8,6 +8,7 @@ import {PermissionGuard} from "./guards/permission.guard";
 import {MachineListComponent} from "./pages/machines/machine-list/machine-list.component";
 import {MachineErrorComponent} from "./pages/machines/machine-error/machine-error.component";
 import {MachineCreateComponent} from "./pages/machines/machine-create/machine-create.component";
+import {MachineScheduleComponent} from "./pages/machines/machine-schedule/machine-schedule.component";
 
 const routes: Routes = [{
   path:'',redirectTo:'login',pathMatch:'full'},
@@ -34,7 +35,9 @@ const routes: Routes = [{
   },
 
   {path:'machines/create', component:MachineCreateComponent, canActivate:[PermissionGuard],
-    data:{permission: 'create_machine'}}
+    data:{permission: 'create_machine'}},
+  { path: 'machines/:id/schedule', component: MachineScheduleComponent, canActivate: [PermissionGuard] },
+  { path: 'errors', component: MachineErrorComponent, canActivate: [PermissionGuard] }
 ];
 
 @NgModule({

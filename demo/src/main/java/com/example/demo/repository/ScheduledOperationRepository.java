@@ -8,6 +8,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface ScheduledOperationRepository extends JpaRepository<ScheduledOperation,Integer> {
+public interface ScheduledOperationRepository extends JpaRepository<ScheduledOperation,Long> {
   List<ScheduledOperation> findAllByScheduledTimeBefore(LocalDateTime now);
 }

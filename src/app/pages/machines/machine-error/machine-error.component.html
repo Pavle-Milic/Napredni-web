@@ -1,31 +1,46 @@
-<h2>Istorija gresaka masina</h2>
+<div class="container" style="margin-top: 20px;">
+  <h2 style="color: darkred;">Istorija Grešaka</h2>
+  <p>Ovde se beleže svi neuspešni pokušaji zakazivanja ili izvršavanja operacija.</p>
 
-<table border="1" cellpadding="8" style="border-collapse: collapse; margin-top: 20px;">
+  <table class="table table-bordered table-hover">
+    <thead style="background-color: #dc3545; color: white;">
+    <tr>
+      <th>Vreme</th>
+      <th>Mašina ID</th>
+      <th>Operacija</th>
+      <th>Poruka greške</th>
+    </tr>
+    </thead>
+    <tbody>
 
-  <thead>
-  <tr>
-    <th>Datum greske</th>
-    <th>Machine ID</th>
-    <th>Operacija</th>
-    <th>Poruka</th>
-  </tr>
-  </thead>
+    <tr *ngFor="let err of errors">
+      <td>{{ err.date | date:'medium' }}</td>
 
-  <tbody>
+      <td style="font-weight: bold;">{{ err.machineId }}</td>
 
-  <tr *ngFor="let err of errors">
-    <td>{{ err.date | date:'yyyy-MM-dd HH:mm' }}</td>
-    <td>{{ err.machineId }}</td>
-    <td>{{ err.operation }}</td>
-    <td>{{ err.message }}</td>
-  </tr>
+      <td>
+          <span class="badge"
+                [ngClass]="{
+                  'badge-success': err.operation === 'START',
+                  'badge-warning': err.operation === 'STOP',
+                  'badge-info': err.operation === 'RESTART'
+                }"
+                style="padding: 5px 10px; border: 1px solid #ccc;">
+            {{ err.operation }}
+          </span>
+      </td>
 
-  <tr *ngIf="errors.length === 0">
-    <td colspan="4" style="text-align:center; padding: 10px;">
-      Nema zapisanih greski.
-    </td>
-  </tr>
+      <td style="color: red;">{{ err.message }}</td>
+    </tr>
 
-  </tbody>
+    <tr *ngIf="errors.length === 0">
+      <td colspan="4" style="text-align: center; padding: 20px;">
+        🎉 Nema zabeleženih grešaka! Sistem radi savršeno.
+      </td>
+    </tr>
 
-</table>
+    </tbody>
+  </table>
+
+  <button routerLink="/machines" class="btn btn-secondary">Nazad na mašine</button>
+</div>

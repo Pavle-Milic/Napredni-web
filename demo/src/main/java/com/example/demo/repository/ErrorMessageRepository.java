@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ErrorMessageRepository extends JpaRepository<ErrorMessage,Integer> {
-  List<ErrorMessage> findByMachineId(Long machineId);
+public interface ErrorMessageRepository extends JpaRepository<ErrorMessage,Long> {
+  List<ErrorMessage> findByUserId(Long userId);
 }

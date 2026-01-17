@@ -14,6 +14,7 @@ import { MachineCreateComponent } from './pages/machines/machine-create/machine-
 import {HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { JwtInterceptor } from './interceptors/jwt.interceptor';
+import { MachineScheduleComponent } from './pages/machines/machine-schedule/machine-schedule.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -23,7 +24,8 @@ import { JwtInterceptor } from './interceptors/jwt.interceptor';
     UserEditComponent,
     MachineListComponent,
     MachineErrorComponent,
-    MachineCreateComponent
+    MachineCreateComponent,
+    MachineScheduleComponent
   ],
   imports: [
     BrowserModule,

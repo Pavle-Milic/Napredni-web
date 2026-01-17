@@ -35,15 +35,13 @@ public class ScheduleService {
       Machine machine = machineRepository.findById((op.getMachineId())).orElse(null);
 
       if (machine == null || !machine.isActive()) {
-        // Loguj grešku
-        createErrorLog(op, "Machine not found or destroyed");
+        createErrorLog(op, "Masina ne postoji ili je unistena"); // Prosledjujemo ceo 'op'
         scheduledRepo.delete(op);
         continue;
       }
 
       if (machine.isBusy()) {
-        // Opcija 1: Probaj kasnije
-        // Opcija 2: Loguj grešku (kao u specifikaciji)
+        // Loguj grešku (kao u specifikaciji)
         createErrorLog(op, "Machine is busy");
         scheduledRepo.delete(op);
         continue;
@@ -51,20 +49,46 @@ public class ScheduleService {
 
       // Pokušaj izvršenja
       try {
-        if ("START".equals(op.getOperation())) {
+        // --- LOGIKA KOJA JE FALILA ---
+
+        // SLUCAJ 1: START
+        if ("START".equalsIgnoreCase(op.getOperation())) {
           if (machine.getStatus() == MachineStatus.STOPPED) {
             machine.setBusy(true);
             machineRepository.save(machine);
             asyncService.startMachineAsync(machine.getId());
           } else {
-            createErrorLog(op, "Machine already running");
+            createErrorLog(op, "Masina vec radi, ne moze se startovati.");
           }
         }
-        // ... handle STOP and RESTART
-      } catch (Exception e) {
-        createErrorLog(op, e.getMessage());
-      }
+        // SLUCAJ 2: STOP (Ovo ti je falilo)
+        else if ("STOP".equalsIgnoreCase(op.getOperation())) {
+          if (machine.getStatus() == MachineStatus.RUNNING) {
+            machine.setBusy(true);
+            machineRepository.save(machine);
+            asyncService.stopMachineAsync(machine.getId());
+          } else {
+            createErrorLog(op, "Masina je vec ugasena, ne moze se stopirati.");
+          }
+        }
+        // SLUCAJ 3: RESTART (I ovo ti je falilo)
+        else if ("RESTART".equalsIgnoreCase(op.getOperation())) {
+          // Restart mozemo raditi ako masina nije busy (sto smo vec proverili gore)
+          // Neki sistemi dozvoljavaju restart samo ako je RUNNING, neki uvek.
+          // Ovde dozvoljavamo uvek, osim ako je busy.
+          machine.setBusy(true);
+          machineRepository.save(machine);
+          asyncService.restartMachineAsync(machine.getId());
+        }
+        // SLUCAJ: NEPOZNATA OPERACIJA
+        else {
+          createErrorLog(op, "Nepoznata operacija: " + op.getOperation());
+        }
 
+      } catch (Exception e) {
+        createErrorLog(op, "Sistemska greska: " + e.getMessage());
+        e.printStackTrace();
+      }
       // Obriši izvršenu operaciju
       scheduledRepo.delete(op);
     }
@@ -76,6 +100,7 @@ public class ScheduleService {
     err.setMachineId(op.getMachineId());
     err.setOperation(op.getOperation());
     err.setMessage(msg);
+    err.setUserId(op.getUserId());
     errorRepo.save(err);
   }
 }

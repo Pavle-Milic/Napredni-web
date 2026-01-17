@@ -14,8 +14,12 @@ export class MachineErrorComponent implements OnInit {
 
   ngOnInit() {
     this.machinesApi.getErrors().subscribe({
-        next: (data) => this.errors = data,
-        error: (err) => console.error(err)
+      next: (data) => {
+        this.errors = data;
+        // Opciono: Sortiramo da najnovije greske budu prve na listi
+        this.errors.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      },
+      error: (err) => console.error("Nisam uspeo da učitam greške:", err)
     });
   }
 }
