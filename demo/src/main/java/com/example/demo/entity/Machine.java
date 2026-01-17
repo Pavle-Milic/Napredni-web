@@ -22,7 +22,8 @@ public class Machine {
 
   private boolean busy; // Da li se trenutno izvršava operacija?
 
-  @ManyToOne
+  @ManyToOne(optional = false) // Ovo kaze Javi: Mora postojati user
+  @JoinColumn(name = "user_id", nullable = false) // Ovo kaze Bazi: Kolona ne sme biti NULL
   private User createdBy;
 
   private LocalDateTime createdAt;
@@ -30,4 +31,14 @@ public class Machine {
   // Optimistic locking za sprečavanje race condition-a
   @Version
   private Integer version;
+
+  @PrePersist
+  public void onCreate() {
+    this.createdAt = LocalDateTime.now();
+    this.active = true;
+
+    if (this.status == null) {
+      this.status = MachineStatus.STOPPED;
+    }
+  }
 }

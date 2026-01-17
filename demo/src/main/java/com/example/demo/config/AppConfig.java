@@ -11,8 +11,4 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableAsync
 @EnableScheduling
 public class AppConfig {
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
 }

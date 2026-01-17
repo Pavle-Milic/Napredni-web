@@ -32,7 +32,7 @@ public class ScheduleService {
     List<ScheduledOperation> ops = scheduledRepo.findAllByScheduledTimeBefore(now);
 
     for (ScheduledOperation op : ops) {
-      Machine machine = machineRepository.findById(Math.toIntExact(op.getMachineId())).orElse(null);
+      Machine machine = machineRepository.findById((op.getMachineId())).orElse(null);
 
       if (machine == null || !machine.isActive()) {
         // Loguj grešku

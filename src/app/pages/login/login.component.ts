@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import {Router} from "@angular/router";
-import {MockDataService} from "../../services/mock-data.service";
+import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -12,21 +12,23 @@ export class LoginComponent {
   password = '';
   error = '';
 
-  constructor(private router: Router,
-              private mockService: MockDataService) {
-  }
-  login(){
-    const user =
-      this.mockService.getUsers().find(u =>u.email === this.email && (u.password ?? "")===(this.password??""));
-    if(user){
-      localStorage.setItem('token', 'mock-token');
-      localStorage.setItem('loggedUser', JSON.stringify(user));
-      this.mockService.setLoggedUser(user);
-      if(user.permissions?.includes('read_user'))
-        this.router.navigate(['/users']);
-      if(user.permissions.length===0) alert("Nemate ni jednu dozvolu.");
-    }else{
-      this.error="Korisnik sa unetim mailom ili sifrom ne postoji.";
-    }
+  constructor(private authService: AuthService, private router: Router) {}
+
+  login() {
+    this.authService.login(this.email, this.password).subscribe({
+      next: (response) => {
+        console.log("Login uspešan, preusmeravam...");
+
+        // Provera da li ruta postoji pre navigacije
+        this.router.navigate(['/machines'])
+          .then(success => {
+            if(!success) console.error("Navigacija nije uspela! Proveri app-routing.module.ts");
+          });
+      },
+      error: (err) => {
+        console.error("Login greska:", err);
+        this.error = 'Neispravan email ili lozinka.';
+      }
+    });
   }
 }

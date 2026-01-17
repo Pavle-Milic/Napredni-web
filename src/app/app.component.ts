@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {MockDataService} from "./services/mock-data.service";
+import {AuthService} from "./services/auth.service";
 import {Router} from "@angular/router";
 
 @Component({
@@ -12,24 +12,16 @@ export class AppComponent {
 
   isLoggedIn = false;
 
-  constructor(public mockService: MockDataService, private router: Router) {}
+  constructor(public authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
 
-    const saved = localStorage.getItem('loggedUser');
-
-    if (saved) {
-      this.mockService.setLoggedUser(JSON.parse(saved));
-      this.isLoggedIn = true;
-    }
-
-
-    this.isLoggedIn = this.mockService.getLoggedUser() !== null;
+    this.isLoggedIn = this.authService.isLoggedIn();
   }
 
   logout() {
-    this.mockService.logout();
-    this.isLoggedIn = false;
-    this.router.navigate(['/login']);
+      this.authService.clearToken();
+      this.isLoggedIn = false;
+      this.router.navigate(['/login']);
   }
 }

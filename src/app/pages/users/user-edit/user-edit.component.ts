@@ -1,33 +1,44 @@
-import { Component } from '@angular/core';
-import {User} from "../../../models/user.model";
-import {ActivatedRoute, Router} from "@angular/router";
-import {MockDataService} from "../../../services/mock-data.service";
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { User } from '../../../models/user.model';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-user-edit',
   templateUrl: './user-edit.component.html',
   styleUrls: ['./user-edit.component.css']
 })
-export class UserEditComponent {
-  user!:User;
-  error='';
+export class UserEditComponent implements OnInit {
+  user: User = { id: 0, firstName: '', lastName: '', email: '', permissions: [], password: '' };
+  error = '';
+
+  // Definisemo sve moguce permisije ovde da bi HTML bio cistiji
+  allPermissions = [
+    'read_user', 'add_user', 'edit_user', 'delete_user',
+    'search_machine', 'start_machine', 'stop_machine', 'restart_machine',
+    'create_machine', 'destroy_machine', 'read_errors'
+  ];
 
   constructor(
-    private route:ActivatedRoute,
+    private route: ActivatedRoute,
     private router: Router,
-    private mockService: MockDataService
+    private userService: UserService
+  ) {}
 
-  ) {
+  ngOnInit() {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+
+    this.userService.getUserById(id).subscribe({
+      next: (data) => {
+        this.user = data;
+        // Backend cesto ne vraca password, pa ga setujemo na prazan string
+        // da ne bi bio undefined
+        this.user.password = '';
+      },
+      error: () => this.error = 'Korisnik nije pronadjen'
+    });
   }
-  ngOnInit(){
-    const id= Number(this.route.snapshot.paramMap.get('id'));
-    const foundUser = this.mockService.getUserById(id);
-    if(foundUser){
-      this.user={...foundUser};
-    }else{
-      this.error='Korisnik nije pronadjen'
-    }
-  }
+
   togglePermission(permission: string) {
     if (this.user.permissions.includes(permission)) {
       this.user.permissions = this.user.permissions.filter(p => p !== permission);
@@ -35,8 +46,11 @@ export class UserEditComponent {
       this.user.permissions.push(permission);
     }
   }
-  saveChanges(){
-    this.mockService.editUser(this.user);
-    this.router.navigate(['/users']);
+
+  saveChanges() {
+    this.userService.updateUser(this.user).subscribe({
+      next: () => this.router.navigate(['/users']),
+      error: () => this.error = 'Greska pri izmeni.'
+    });
   }
 }

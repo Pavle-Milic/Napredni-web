@@ -21,7 +21,7 @@ public class AsyncMachineService {
     try {
       Thread.sleep(10000 + (long)(Math.random() * 2000)); // Simulacija 10-12s
 
-      Machine machine = machineRepository.findById(Math.toIntExact(machineId)).orElseThrow();
+      Machine machine = machineRepository.findById((machineId)).orElseThrow();
       machine.setStatus(MachineStatus.RUNNING);
       machine.setBusy(false); // Oslobađamo mašinu
       machineRepository.save(machine);
@@ -48,7 +48,7 @@ public class AsyncMachineService {
 
       // Prva polovina vremena
       Thread.sleep(duration / 2);
-      Machine machine = machineRepository.findById(Math.toIntExact(machineId)).orElseThrow();
+      Machine machine = machineRepository.findById((machineId)).orElseThrow();
       machine.setStatus(MachineStatus.STOPPED); // Privremeno ugašena
       machineRepository.save(machine);
       // Možemo poslati update i ovde ako želimo real-time prikaz

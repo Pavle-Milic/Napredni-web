@@ -7,111 +7,92 @@ import com.example.demo.repository.MachineRepository;
 import com.example.demo.security.MyUserDetails;
 import com.example.demo.service.AsyncMachineService;
 import com.example.demo.service.MachineService;
+import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
-
+import java.util.Map;
 @RestController
 @RequestMapping("/api/machines")
+@CrossOrigin
 public class MachineController {
 
-  @Autowired
-  private MachineRepository machineRepository;
+  private final MachineService machineService;
+  private final UserService userService; // Dodajemo UserService
 
-  @Autowired
-  private MachineService machineService;
+  public MachineController(MachineService machineService, UserService userService) {
+    this.machineService = machineService;
+    this.userService = userService;
+  }
 
-  @Autowired
-  private AsyncMachineService asyncService;
+  // 1. PRETRAGA (SEARCH)
+  @GetMapping("/search")
+  public ResponseEntity<?> search(
+    @RequestParam(required = false) String name,
+    @RequestParam(required = false) String status,
+    @RequestParam(required = false) String dateFrom,
+    @RequestParam(required = false) String dateTo
+  ) {
+    User user=getCurrentUser();
+    // Provera permisije "search_machine"
+    if (!checkPermission("search_machine")) {
+      return ResponseEntity.status(403).body("Nemate permisiju 'search_machine'.");
+    }
+    // Ovde pozivas servis za pretragu (implementiraj search u servisu ako vec nisi)
+    // Za sada vracamo sve ako nemas filter logic
+    return ResponseEntity.ok(machineService.findAllActiveForUser(user));
+  }
 
-  // 1. GET - Izlistaj sve aktivne masine za ulogovanog korisnika
-  @GetMapping
-  public ResponseEntity<List<Machine>> getAllMachines() {
-    User currentUser = getCurrentUser();
-    if (!currentUser.getPermissions().contains("can_read_machines")) {
+  // 2. KREIRANJE (CREATE)
+  @PostMapping("/create")
+  public ResponseEntity<?> createMachine(@RequestBody Machine machine) {
+    // Provera permisije "create_machine"
+    if (!checkPermission("create_machine")) {
       return ResponseEntity.status(403).build();
     }
-    return ResponseEntity.ok(machineService.findAllActiveForUser(currentUser));
-  }
 
-  // 2. POST - Start Machine
-  @PostMapping("/start/{id}")
-  public ResponseEntity<?> startMachine(@PathVariable Long id) {
-    User currentUser = getCurrentUser();
-    if (!currentUser.getPermissions().contains("can_start_machines"))
-      return ResponseEntity.status(403).body("Nemate dozvolu za pokretanje.");
-
-    Machine machine = machineRepository.findById(id).orElseThrow();
-
-    if (machine.isBusy() || machine.getStatus() != MachineStatus.STOPPED)
-      return ResponseEntity.badRequest().body("Mašina je zauzeta ili je već pokrenuta.");
-
-    machine.setBusy(true);
-    machineRepository.save(machine);
-
-    asyncService.startMachineAsync(id);
-    return ResponseEntity.ok().build();
-  }
-
-  // 3. POST - Stop Machine
-  @PostMapping("/stop/{id}")
-  public ResponseEntity<?> stopMachine(@PathVariable Long id) {
-    User currentUser = getCurrentUser();
-    if (!currentUser.getPermissions().contains("can_stop_machines"))
-      return ResponseEntity.status(403).body("Nemate dozvolu za zaustavljanje.");
-
-    Machine machine = machineRepository.findById(id).orElseThrow();
-
-    if (machine.isBusy() || machine.getStatus() != MachineStatus.RUNNING)
-      return ResponseEntity.badRequest().body("Mašina je zauzeta ili je već ugašena.");
-
-    machine.setBusy(true);
-    machineRepository.save(machine);
-
-    asyncService.stopMachineAsync(id);
-    return ResponseEntity.ok().build();
-  }
-
-  // 4. POST - Restart Machine
-  @PostMapping("/restart/{id}")
-  public ResponseEntity<?> restartMachine(@PathVariable Long id) {
-    User currentUser = getCurrentUser();
-    if (!currentUser.getPermissions().contains("can_restart_machines"))
-      return ResponseEntity.status(403).body("Nemate dozvolu za restart.");
-
-    Machine machine = machineRepository.findById(id).orElseThrow();
-
-    if (machine.isBusy() || machine.getStatus() != MachineStatus.RUNNING)
-      return ResponseEntity.badRequest().body("Samo upaljena mašina se može restartovati.");
-
-    machine.setBusy(true);
-    machineRepository.save(machine);
-
-    asyncService.restartMachineAsync(id); // Ovu metodu dodaj u AsyncMachineService (stop pa start)
-    return ResponseEntity.ok().build();
-  }
-
-  // 5. DELETE - Destroy Machine (Soft delete)
-  @DeleteMapping("/{id}")
-  public ResponseEntity<?> destroyMachine(@PathVariable Long id) {
-    User currentUser = getCurrentUser();
-    if (!currentUser.getPermissions().contains("can_destroy_machines"))
-      return ResponseEntity.status(403).body("Nemate dozvolu za brisanje.");
+    // --- KLJUCNO: VEZUJEMO MASINU ZA ULOGOVANOG KORISNIKA ---
+    User user = getCurrentUser();
+    machine.setCreatedBy(user); // <--- OVO JE FALILO
+    // --------------------------------------------------------
 
     try {
+      return ResponseEntity.ok(machineService.createMachine(machine, user));
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body("Greska: " + e.getMessage());
+    }
+  }
+
+  // 3. BRISANJE (DESTROY)
+  @DeleteMapping("/{id}")
+  public ResponseEntity<?> destroyMachine(@PathVariable Long id) {
+    if (!checkPermission("destroy_machine")) {
+      return ResponseEntity.status(403).build();
+    }
+    try {
+      // Zovemo TVOJU destroy metodu koja proverava status
       machineService.destroyMachine(id);
       return ResponseEntity.ok().build();
-    } catch (Exception e) {
+    } catch (RuntimeException e) {
+      // Hvatamo gresku ako masina nije STOPPED
       return ResponseEntity.badRequest().body(e.getMessage());
     }
   }
 
-  // Helper metoda da ne ponavljamo kod za dobijanje korisnika
+  // --- POMOCNE METODE ---
+
   private User getCurrentUser() {
     MyUserDetails userDetails = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    return userDetails.getUser();
+    // Cesto je bolje povuci svezeg usera iz baze jer onaj u tokenu moze biti star
+    return userService.findById(userDetails.getUser().getId()).orElseThrow();
+  }
+
+  private boolean checkPermission(String permission) {
+    User user = getCurrentUser();
+    return user.getPermissions().contains(permission);
   }
 }

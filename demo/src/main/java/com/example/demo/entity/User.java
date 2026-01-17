@@ -1,7 +1,10 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -30,4 +33,8 @@ public class User {
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "user_permissions", joinColumns = @JoinColumn(name = "user_id"))
   private List<String> permissions;
+
+  @OneToMany(mappedBy = "createdBy", cascade = CascadeType.REMOVE, orphanRemoval = true)
+  @JsonIgnore // OBAVEZNO: Da spreci beskonacnu petlju u JSON-u (User -> Machine -> User -> Machine...)
+  private List<Machine> machines = new ArrayList<>();
 }

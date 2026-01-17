@@ -1,14 +1,21 @@
-<nav *ngIf="isLoggedIn">
+<nav class="navbar">
+  <div class="logo">RAF Cloud</div>
+  <div class="menu">
+    <a routerLink="/users"
+       *ngIf="authService.hasPermission('read_user')">
+      Korisnici
+    </a>
+|
+    <a routerLink="/machines"
+       *ngIf="authService.hasPermission('search_machine')">
+      Mašine
+    </a>
 
-  <a routerLink="/users">Korisnici</a> |
-  <a *ngIf="mockService.getLoggedUser()?.permissions?.includes('add_user')"
-     routerLink="/users/add">Dodaj korisnika</a> |
-  <a *ngIf="mockService.getLoggedUser()?.permissions?.includes('search_machine')"
-     routerLink="/machines">Masine</a> |
-  <a *ngIf="mockService.getLoggedUser()?.permissions?.includes('read_errors')"
-     routerLink="/machines/errors">Sve greske</a> |
+  </div>
 
-  <button (click)="logout()">Logout</button>
+  <div class="profile" *ngIf="authService.isLoggedIn()">
+    <button (click)="logout()">Logout</button>
+  </div>
 </nav>
 
 <router-outlet></router-outlet>

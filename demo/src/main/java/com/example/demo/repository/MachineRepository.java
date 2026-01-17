@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface MachineRepository extends JpaRepository<Machine, Integer> {
+public interface MachineRepository extends JpaRepository<Machine, Long> {
   List<Machine> findByActiveTrue();
   List<Machine> findByActiveTrueAndCreatedBy_Id(Long userId);
 }

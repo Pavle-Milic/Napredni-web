@@ -1,13 +1,15 @@
 <h2>Svi korisnici</h2>
-<button *ngIf="loggedUser?.permissions?.includes('add_user')"
-  (click)="goToAdd()">Dodaj korisnika</button>
+
+<button *ngIf="authService.hasPermission('add_user')"
+        (click)="goToAdd()">Dodaj korisnika</button>
+
 <table border="1" style="margin-top: 10px;">
   <tr>
     <th>Ime</th>
     <th>Prezime</th>
     <th>Mail</th>
     <th>Dozvole</th>
-  </tr>
+    <th>Akcije</th> </tr>
   <tr *ngFor="let user of users">
 
     <td>{{user.firstName}}</td>
@@ -15,25 +17,25 @@
     <td>{{user.lastName}}</td>
 
     <td>
-      <span *ngIf="loggedUser?.permissions?.includes('edit_user'); else noEdit"
+      <span *ngIf="authService.hasPermission('edit_user'); else noEdit"
             (click)="goToEdit(user)"
-            style="cursor:pointer; text-decoration:underline;">
+            style="cursor:pointer; text-decoration:underline; color: blue;">
         {{ user.email }}
       </span>
       <ng-template #noEdit>
-      <span>
-        {{ user.email }}
-      </span>
-        </ng-template>
+        <span>
+          {{ user.email }}
+        </span>
+      </ng-template>
     </td>
-
 
     <td>{{user.permissions.join(', ')}}</td>
 
-    <td><button *ngIf="loggedUser?.permissions?.includes('delete_user')"
-                (click)="deleteUser(user.id)">
-      Delete
-    </button>
+    <td>
+      <button *ngIf="authService.hasPermission('delete_user')"
+              (click)="deleteUser(user.id)">
+        Delete
+      </button>
     </td>
 
   </tr>

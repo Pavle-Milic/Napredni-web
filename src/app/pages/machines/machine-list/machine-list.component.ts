@@ -1,65 +1,71 @@
-import {Component, OnInit} from '@angular/core';
-import {Machine} from "../../../models/machine.model";
-import {MockDataService} from "../../../services/mock-data.service";
-import {Router} from "@angular/router";
-import {User} from "../../../models/user.model";
-import {MachinesApiService} from "../../../services/machines-api.service"
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Machine } from '../../../models/machine.model';
+import { MachinesApiService } from '../../../services/machines-api.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-machine-list',
   templateUrl: './machine-list.component.html',
   styleUrls: ['./machine-list.component.css']
 })
-export class MachineListComponent implements OnInit{
-  machines: Machine[]=[];
-  filteredMachines:Machine[]=[];
-  user:User|null=null;
+export class MachineListComponent implements OnInit {
+  machines: Machine[] = [];
+  filteredMachines: Machine[] = []; // <--- Vraceno zbog HTML-a
 
-  filters={
-    name:'',
-    status:'',
-    startDate:'',
-    endDate:''
+  // Filter objekat
+  filters = {
+    name: '',
+    status: '',
+    startDate: '',
+    endDate: ''
   };
-  constructor(private machinesApi: MachinesApiService, private router: Router) {
-  }
+
+  constructor(
+    private machinesApi: MachinesApiService,
+    public authService: AuthService, // <--- Public zbog HTML-a
+    private router: Router // <--- Router za navigaciju
+  ) {}
+
   ngOnInit() {
-    this.user=this.machinesApi.getLoggedUser();
-    const allMachines=this.machinesApi.getMachines();
-
-    if(this.machinesApi.isAdmin()){
-      this.machines=allMachines.filter(m=>m.active);
-    }else{
-      this.machines=allMachines.filter(m=> m.active && m.createdBy===this.user?.id);
-    }
-    this.filteredMachines=[...this.machines];
+    this.loadMachines();
   }
 
-  search(){
-    this.filteredMachines=this.machines.filter(m=>{
-      const nameOk=this.filters.name ?
-        m.name.toLowerCase().includes(this.filters.name.toLowerCase()) : true;
-
-      const statusOk= this.filters.status ?
-        m.status===this.filters.status : true;
-
-      const startOk=this.filters.startDate ?
-        new Date(m.createdAt) >= new Date(this.filters.startDate) : true;
-
-      const endOk=this.filters.endDate ?
-        new Date(m.createdAt) <= new Date(this.filters.endDate) : true;
-      return nameOk && statusOk && startOk && endOk;
+  loadMachines() {
+    this.machinesApi.search(this.filters).subscribe({
+      next: (data) => {
+        this.machines = data;
+        this.filteredMachines = data; // <--- Inicijalno su isto
+      },
+      error: (err) => console.error(err)
     });
   }
 
-  goToCreate(){
+  search() {
+    // Backend search
+    this.loadMachines();
+  }
+
+  goToCreate() {
     this.router.navigate(['/machines/create']);
   }
-  destroyMachine(id:number){
-    if(confirm("Potvrdi brisanje")){
-      this.machinesApi.destroyMachine(id);
-      this.machines = this.machines.filter(m => m.id !== id);
-      this.filteredMachines = this.filteredMachines.filter(m => m.id !== id);
+
+  // Akcije
+  startMachine(id: number) {
+    this.machinesApi.startMachine(id).subscribe(() => this.loadMachines());
+  }
+
+  stopMachine(id: number) {
+    this.machinesApi.stopMachine(id).subscribe(() => this.loadMachines());
+  }
+
+  restartMachine(id: number) {
+    this.machinesApi.restartMachine(id).subscribe(() => this.loadMachines());
+  }
+
+  destroyMachine(id: number) {
+    if(confirm("Da li ste sigurni?")) {
+      this.machinesApi.destroy(id).subscribe(() => this.loadMachines());
     }
   }
 }

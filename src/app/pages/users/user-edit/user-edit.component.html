@@ -1,19 +1,38 @@
-<h2>Uredjivanje korisnika</h2>
-<p style="color:red">{{error}}</p>
-<label>Ime:</label>
-<input [(ngModel)]="user.firstName"><br>
+<div class="container" style="max-width: 500px; margin-top: 20px;">
+  <h2>Uređivanje korisnika</h2>
 
-<label>Prezime:</label>
-<input [(ngModel)]="user.lastName"><br>
+  <p *ngIf="error" style="color:red; font-weight: bold;">{{error}}</p>
 
-<label>Email:</label>
-<input [(ngModel)]="user.email"><br>
+  <div class="form-group">
+    <label>Ime:</label>
+    <input [(ngModel)]="user.firstName" class="form-control"><br>
+  </div>
 
-<h3>Dozvole:</h3>
-<div>
-  <label><input type="checkbox"[checked]="user.permissions.includes('add_user')"(change)="togglePermission('add_user')">add_user</label><br>
-  <label><input type="checkbox"[checked]="user.permissions.includes('read_user')"(change)="togglePermission('read_user')">read_user</label><br>
-  <label><input type="checkbox"[checked]="user.permissions.includes('edit_user')"(change)="togglePermission('edit_user')">edit_user</label><br>
-  <label><input type="checkbox"[checked]="user.permissions.includes('delete_user')"(change)="togglePermission('delete_user')">delete_user</label><br>
+  <div class="form-group">
+    <label>Prezime:</label>
+    <input [(ngModel)]="user.lastName" class="form-control"><br>
+  </div>
+
+  <div class="form-group">
+    <label>Email:</label>
+    <input [(ngModel)]="user.email" class="form-control"><br>
+  </div>
+
+  <hr>
+  <h3>Dozvole:</h3>
+
+  <div class="permissions-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+    <div *ngFor="let perm of allPermissions">
+      <label style="cursor: pointer;">
+        <input type="checkbox"
+               [checked]="user.permissions.includes(perm)"
+               (change)="togglePermission(perm)">
+        {{ perm }}
+      </label>
+    </div>
+  </div>
+
+  <hr>
+  <button (click)="saveChanges()" class="btn btn-primary" style="margin-top: 15px;">Sačuvaj promene</button>
 </div>
-<button (click)="saveChanges()">Sacuvaj</button>
+
